@@ -69,7 +69,7 @@ def add_indicators(df: pd.DataFrame) -> pd.DataFrame:
 st.title("📈 Escáner de Reversiones Futuros Binance")
 st.write("Ejecución esporádica bajo demanda 100% gratuita.")
 
-if st.button("🚀 Iniciar Escaneo de Mercado", variant="primary"):
+if st.button("🚀 Iniciar Escaneo de Mercado", type="primary"):
     with st.spinner("Procesando criptomonedas en tiempo real..."):
         try:
             all_symbols = get_all_usdt_futures_symbols()
