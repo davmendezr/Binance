@@ -6,7 +6,9 @@ import numpy as np
 import ta
 from datetime import datetime
 
-BINANCE_FUTURES_BASE = "https://binance.com"
+# BINANCE_FUTURES_BASE = "https://binance.com"
+BINANCE_FUTURES_BASE = "https://fapi.binance.com"
+
 INTERVAL = "4h" 
 FEATURES = ["rsi", "mfi", "stoch_k", "stoch_d", "macd_hist", "hist_relativo", "vol_ratio", "atr"]
 
