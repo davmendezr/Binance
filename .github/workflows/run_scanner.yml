@@ -5,7 +5,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest-eu # Ejecuta sobre servidores Linux europeos/globales
+    runs-on: ubuntu-latest # Ejecuta sobre servidores Linux europeos/globales
 
     steps:
     - name: Clonar el repositorio
