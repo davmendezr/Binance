@@ -6,7 +6,7 @@ import numpy as np
 import ta
 from datetime import datetime
 
-BINANCE_FUTURES_BASE = "https://fapi.binance.com"
+BINANCE_FUTURES_BASE = "https://binance.com"
 INTERVAL = "4h" 
 FEATURES = ["rsi", "mfi", "stoch_k", "stoch_d", "macd_hist", "hist_relativo", "vol_ratio", "atr"]
 
@@ -63,26 +63,32 @@ def add_indicators(df: pd.DataFrame) -> pd.DataFrame:
     df["atr"] = ta.volatility.average_true_range(df["high"], df["low"], df["close"], window=14)
     return df.dropna().reset_index(drop=True)
 
-print("🚀 Iniciando escaneo en GitHub Actions...")
-all_symbols = get_all_usdt_futures_symbols()
-rows = []
+# --- INTERFAZ GRÁFICA DE STREAMLIT ---
+st.title("📈 Escáner de Reversiones Futuros Binance")
+st.write("Ejecución esporádica bajo demanda 100% gratuita.")
 
-for sym in all_symbols:
-    df = get_ohlc(sym, interval=INTERVAL, limit=100)
-    if df is not None:
-        df = add_indicators(df)
-        if not df.empty:
-            row = df.iloc[-1]
-            rows.append({"Timestamp": datetime.now(), "Symbol": sym, **{f: row[f] for f in FEATURES}})
+if st.button("🚀 Iniciar Escaneo de Mercado", variant="primary"):
+    with st.spinner("Procesando criptomonedas en tiempo real..."):
+        try:
+            all_symbols = get_all_usdt_futures_symbols()
+            rows = []
 
-if rows:
-    df_out = pd.DataFrame(rows)
-    df_out["KPI_avg2"] = (df_out["rsi"] + df_out["mfi"]) / 2
-    
-    # Imprimir el DataFrame directamente en la consola de GitHub de forma limpia
-    pd.set_option('display.max_columns', None)
-    pd.set_option('display.width', 1000)
-    print("\n📊 RESULTADOS DEL SCANNER:")
-    print(df_out[['Symbol', 'rsi', 'mfi', 'KPI_avg2']].to_string())
-else:
-    print("❌ No se encontraron patrones de reversión.")
+            for sym in all_symbols:
+                df = get_ohlc(sym, interval=INTERVAL, limit=100)
+                if df is not None:
+                    df = add_indicators(df)
+                    if not df.empty:
+                        row = df.iloc[-1]
+                        rows.append({"Timestamp": datetime.now(), "Symbol": sym, **{f: row[f] for f in FEATURES}})
+
+            if rows:
+                df_out = pd.DataFrame(rows)
+                df_out["KPI_avg2"] = (df_out["rsi"] + df_out["mfi"]) / 2
+                
+                st.success("¡Análisis completado con éxito!")
+                # Desplegar la tabla interactiva directamente en la pantalla web
+                st.dataframe(df_out[['Symbol', 'rsi', 'mfi', 'KPI_avg2']])
+            else:
+                st.warning("❌ No se encontraron patrones de reversión en este momento.")
+        except Exception as e:
+            st.error(f"Error de ejecución: {str(e)}")
